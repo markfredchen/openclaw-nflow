@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sprint {sprint_number} Review Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+        header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        header .meta {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .summary-card h3 {
+            color: #666;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .summary-card .value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #333;
+        }
+        .summary-card.success .value { color: #10b981; }
+        .summary-card.warning .value { color: #f59e0b; }
+        .summary-card.danger .value { color: #ef4444; }
+        .section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .section h2 {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+        .status-badge.pass { background: #d1fae5; color: #065f46; }
+        .status-badge.fail { background: #fee2e2; color: #991b1b; }
+        .status-badge.blocked { background: #fef3c7; color: #92400e; }
+        .status-badge.progress { background: #dbeafe; color: #1e40af; }
+        .retrospective {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+        .retro-item {
+            padding: 16px;
+            border-radius: 8px;
+        }
+        .retro-item h3 {
+            font-size: 1em;
+            margin-bottom: 12px;
+        }
+        .retro-item.positive { background: #d1fae5; }
+        .retro-item.negative { background: #fee2e2; }
+        .retro-item.action { background: #dbeafe; }
+        .retro-item ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .retro-item li {
+            padding: 6px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        .retro-item.positive li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #065f46;
+        }
+        .retro-item.negative li::before {
+            content: "✗";
+            position: absolute;
+            left: 0;
+            color: #991b1b;
+        }
+        .retro-item.action li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #1e40af;
+        }
+        .intervention-table .story {
+            font-weight: 600;
+        }
+        .intervention-table .problem { color: #ef4444; }
+        .intervention-table .solution { color: #10b981; }
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Sprint {sprint_number} Review Report</h1>
+            <div class="meta">
+                <span><strong>Sprint:</strong> sprint-{sprint_number}</span>
+                <span><strong>Date:</strong> {date}</span>
+                <span><strong>Team:</strong> {team}</span>
+            </div>
+        </header>
+
+        <div class="summary">
+            <div class="summary-card success">
+                <h3>Completed Stories</h3>
+                <div class="value">{completed_stories}/{total_stories}</div>
+            </div>
+            <div class="summary-card">
+                <h3>Completion Rate</h3>
+                <div class="value">{completion_rate}%</div>
+            </div>
+            <div class="summary-card">
+                <h3>Planned Points</h3>
+                <div class="value">{planned_points}</div>
+            </div>
+            <div class="summary-card success">
+                <h3>Completed Points</h3>
+                <div class="value">{completed_points}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📋 Stories Overview</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Story ID</th>
+                        <th>Name</th>
+                        <th>Points</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {stories_table}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>🔄 Retrospective</h2>
+            <div class="retrospective">
+                <div class="retro-item positive">
+                    <h3>✅ What Went Well</h3>
+                    <ul>
+                        {went_well_items}
+                    </ul>
+                </div>
+                <div class="retro-item negative">
+                    <h3>❌ Areas for Improvement</h3>
+                    <ul>
+                        {improvement_items}
+                    </ul>
+                </div>
+                <div class="retro-item action">
+                    <h3>🎯 Next Sprint Focus</h3>
+                    <ul>
+                        {next_sprint_items}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        {intervention_section}
+
+        <div class="section">
+            <h2>📊 Code Quality</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Check Item</th>
+                        <th>Status</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {quality_checks}
+                </tbody>
+            </table>
+        </div>
+
+        {issues_section}
+
+        <div class="section">
+            <h2>🚀 Next Steps</h2>
+            <ul style="list-style: disc; padding-left: 24px;">
+                {next_steps}
+            </ul>
+        </div>
+
+        <footer>
+            <p>Generated by NFlow · Sprint {sprint_number} Review · {date}</p>
+        </footer>
+    </div>
+</body>
+</html>

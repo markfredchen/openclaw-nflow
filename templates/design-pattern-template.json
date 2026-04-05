@@ -1,0 +1,261 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "YYYY-MM-DD",
+    "updatedBy": "UI Designer Agent",
+    "description": "项目设计系统规范 - 所有 UI 页面生成必须遵守",
+    "status": "DRAFT | APPROVED"
+  },
+
+  "visualStyle": {
+    "name": "风格名称",
+    "description": "视觉风格描述",
+    "keywords": ["干净", "专业", "现代"],
+    "references": []
+  },
+
+  "color": {
+    "primary": {
+      "value": "#1890FF",
+      "description": "主色 - 用于主要按钮、重要强调",
+      "hover": "#40A9FF",
+      "active": "#096DD9",
+      "disabled": "rgba(24, 144, 255, 0.5)"
+    },
+    "secondary": {
+      "value": "#52C41A",
+      "description": "成功色 - 用于成功状态"
+    },
+    "warning": {
+      "value": "#FAAD14",
+      "description": "警告色 - 用于警告提示"
+    },
+    "error": {
+      "value": "#FF4D4F",
+      "description": "错误色 - 用于错误状态"
+    },
+    "info": {
+      "value": "#1890FF",
+      "description": "信息色 - 用于信息提示"
+    },
+    "neutral": {
+      "textPrimary": "#262626",
+      "textSecondary": "#8C8C8C",
+      "textDisabled": "#D9D9D9",
+      "backgroundPrimary": "#FFFFFF",
+      "backgroundSecondary": "#F5F5F5",
+      "border": "#E8E8E8",
+      "divider": "#EBEEF5"
+    }
+  },
+
+  "typography": {
+    "fontFamily": {
+      "ios": "SF Pro Text, SF Pro Display, -apple-system, sans-serif",
+      "android": "Roboto, -apple-system, sans-serif",
+      "web": "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+    },
+    "size": {
+      "pageTitle": { "value": 24, "unit": "px", "lineHeight": 32, "fontWeight": 600 },
+      "sectionTitle": { "value": 18, "unit": "px", "lineHeight": 26, "fontWeight": 600 },
+      "body": { "value": 14, "unit": "px", "lineHeight": 22, "fontWeight": 400 },
+      "caption": { "value": 12, "unit": "px", "lineHeight": 18, "fontWeight": 400 },
+      "button": { "value": 14, "unit": "px", "lineHeight": 20, "fontWeight": 500 }
+    }
+  },
+
+  "spacing": {
+    "baseUnit": 4,
+    "token": {
+      "xs": { "value": 4, "description": "紧凑间距" },
+      "sm": { "value": 8, "description": "小间距" },
+      "md": { "value": 12, "description": "中间距" },
+      "lg": { "value": 16, "description": "标准间距" },
+      "xl": { "value": 24, "description": "大间距" },
+      "xxl": { "value": 32, "description": "超大间距" },
+      "xxxl": { "value": 48, "description": "页面级间距" }
+    },
+    "pageMargin": {
+      "mobile": { "value": 16, "unit": "px" },
+      "tablet": { "value": 24, "unit": "px" },
+      "desktop": { "value": 32, "unit": "px" }
+    }
+  },
+
+  "borderRadius": {
+    "xs": { "value": 4, "unit": "px", "description": "标签/小按钮" },
+    "sm": { "value": 8, "unit": "px", "description": "按钮/输入框" },
+    "md": { "value": 12, "unit": "px", "description": "卡片" },
+    "lg": { "value": 16, "unit": "px", "description": "弹窗/面板" },
+    "full": { "value": 9999, "unit": "px", "description": "头像/图标按钮" }
+  },
+
+  "shadow": {
+    "none": { "value": "none", "description": "无阴影" },
+    "sm": { "value": "0 1px 2px rgba(0,0,0,0.05)", "description": "轻微阴影-输入框内" },
+    "md": { "value": "0 2px 8px rgba(0,0,0,0.1)", "description": "小阴影-卡片悬停" },
+    "lg": { "value": "0 4px 12px rgba(0,0,0,0.15)", "description": "中阴影-卡片默认" },
+    "xl": { "value": "0 8px 24px rgba(0,0,0,0.2)", "description": "大阴影-弹窗浮层" }
+  },
+
+  "components": {
+    "button": {
+      "primary": {
+        "backgroundColor": "primary.value",
+        "color": "#FFFFFF",
+        "border": "none",
+        "borderRadius": "sm.value",
+        "fontSize": "typography.size.button",
+        "fontWeight": 500,
+        "height": { "lg": 40, "md": 32, "sm": 24 },
+        "padding": { "lg": "12px 24px", "md": "8px 16px", "sm": "4px 12px" },
+        "states": {
+          "hover": { "backgroundColor": "primary.hover" },
+          "active": { "backgroundColor": "primary.active" },
+          "disabled": { "opacity": 0.5, "cursor": "not-allowed" },
+          "loading": { "opacity": 0.8 }
+        }
+      },
+      "secondary": {
+        "backgroundColor": "transparent",
+        "color": "primary.value",
+        "border": "1px solid primary.value",
+        "borderRadius": "sm.value",
+        "fontSize": "typography.size.button"
+      },
+      "text": {
+        "backgroundColor": "transparent",
+        "color": "primary.value",
+        "border": "none",
+        "fontSize": "typography.size.button"
+      },
+      "dashed": {
+        "backgroundColor": "transparent",
+        "color": "primary.value",
+        "border": "1px dashed primary.value",
+        "borderRadius": "sm.value",
+        "fontSize": "typography.size.button"
+      }
+    },
+
+    "input": {
+      "default": {
+        "height": { "lg": 40, "md": 32, "sm": 24 },
+        "padding": { "lg": "12px 16px", "md": "8px 12px", "sm": "4px 8px" },
+        "border": "1px solid neutral.border",
+        "borderRadius": "sm.value",
+        "fontSize": "typography.size.body",
+        "color": "neutral.textPrimary",
+        "backgroundColor": "neutral.backgroundPrimary",
+        "states": {
+          "focus": {
+            "border": "1px solid primary.value",
+            "backgroundColor": "rgba(24, 144, 255, 0.05)"
+          },
+          "error": {
+            "border": "1px solid error.value",
+            "backgroundColor": "rgba(255, 77, 79, 0.05)"
+          },
+          "disabled": {
+            "backgroundColor": "neutral.backgroundSecondary",
+            "cursor": "not-allowed"
+          }
+        }
+      },
+      "placeholderColor": "neutral.textDisabled"
+    },
+
+    "card": {
+      "default": {
+        "backgroundColor": "neutral.backgroundPrimary",
+        "borderRadius": "borderRadius.md.value",
+        "padding": "spacing.token.lg.value + 'px'",
+        "shadow": "shadow.md.value",
+        "states": {
+          "hover": {
+            "shadow": "shadow.lg.value",
+            "transform": "translateY(-2px)"
+          }
+        }
+      }
+    },
+
+    "navigation": {
+      "topBar": {
+        "height": { "ios": 44, "android": 56, "web": 56 },
+        "backgroundColor": "neutral.backgroundPrimary",
+        "borderBottom": "1px solid neutral.border"
+      },
+      "tabBar": {
+        "height": { "ios": 49, "android": 56, "web": 56 },
+        "backgroundColor": "neutral.backgroundPrimary",
+        "borderTop": "1px solid neutral.border",
+        "activeColor": "primary.value",
+        "inactiveColor": "neutral.textSecondary"
+      }
+    },
+
+    "list": {
+      "item": {
+        "height": { "ios": 44, "android": 48, "web": 48 },
+        "padding": "spacing.token.lg.value + 'px'",
+        "borderBottom": "1px solid neutral.divider"
+      }
+    }
+  },
+
+  "responsive": {
+    "breakpoints": {
+      "mobile": { "maxWidth": 767, "description": "手机" },
+      "tablet": { "minWidth": 768, "maxWidth": 1023, "description": "平板" },
+      "desktop": { "minWidth": 1024, "maxWidth": 1439, "description": "桌面" },
+      "wide": { "minWidth": 1440, "description": "宽屏" }
+    },
+    "grid": {
+      "columns": { "mobile": 4, "tablet": 8, "desktop": 12, "wide": 12 },
+      "gutter": { "mobile": 16, "tablet": 24, "desktop": 32, "wide": 32 }
+    }
+  },
+
+  "platform": {
+    "ios": {
+      "fontFamily": "typography.fontFamily.ios",
+      "safeAreaTop": 44,
+      "safeAreaBottom": 34,
+      "statusBarHeight": 44,
+      "navigationBarHeight": 44,
+      "tabBarHeight": 49
+    },
+    "android": {
+      "fontFamily": "typography.fontFamily.android",
+      "statusBarHeight": "dynamic",
+      "navigationBarHeight": 56,
+      "tabBarHeight": 56
+    }
+  },
+
+  "animation": {
+    "duration": {
+      "fast": { "value": 150, "unit": "ms" },
+      "normal": { "value": 300, "unit": "ms" },
+      "slow": { "value": 500, "unit": "ms" }
+    },
+    "easing": {
+      "default": "cubic-bezier(0.4, 0, 0.2, 1)",
+      "enter": "cubic-bezier(0, 0, 0.2, 1)",
+      "exit": "cubic-bezier(0.4, 0, 1, 1)",
+      "bounce": "cubic-bezier(0.68, -0.55, 0.265, 1.55)"
+    }
+  },
+
+  "zIndex": {
+    "dropdown": 1000,
+    "sticky": 1100,
+    "fixed": 1200,
+    "modalBackdrop": 1300,
+    "modal": 1400,
+    "popover": 1500,
+    "tooltip": 1600,
+    "toast": 1700
+  }
+}
