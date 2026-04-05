@@ -1,33 +1,84 @@
-# NFlow Telegram 通知参考
+# NFlow 通知系统
+
+## 概述
+
+NFlow 支持通过多种渠道发送开发节点通知，不仅仅是 Telegram。
+
+---
+
+## 通知配置
+
+### 配置文件位置
+
+项目根目录：`.nflow/notify-config.json`
+
+### 配置格式
+
+```json
+{
+    "channel": "telegram",
+    "target": "7314529482",
+    "enabled": true,
+    "notify_on": {
+        "phase_complete": true,
+        "story_complete": true,
+        "review_required": true,
+        "intervention_required": true,
+        "sprint_complete": true
+    }
+}
+```
+
+### 配置字段说明
+
+| 字段 | 说明 | 可选值 |
+|------|------|--------|
+| channel | 通知渠道 | telegram, discord, slack, whatsapp, signal, imessage |
+| target | 目标标识 | chat_id（Telegram）、channel_id（Discord）等 |
+| enabled | 是否启用 | true, false |
+| notify_on.* | 通知触发条件 | true, false |
+
+### 支持的渠道
+
+| 渠道 | target 格式 | 说明 |
+|------|------------|------|
+| telegram | Chat ID 或 @username | 即时通讯，默认配置 |
+| discord | Channel ID | 需配置 Discord Bot |
+| slack | Channel ID | 需配置 Slack App |
+| whatsapp | Phone number | 需配置 WhatsApp Business |
+| signal | Phone number | 需配置 Signal Gateway |
+| imessage | Chat ID | macOS only |
+
+---
 
 ## 通知脚本
 
 **位置:** `scripts/nflow_notify.py`
 
-## 基本用法
+### 基本用法
 
 ```bash
 python3 scripts/nflow_notify.py \
     --node "节点名称" \
     --status success \
-    --message "详情信息" \
-    --story-id STORY-001 \
-    --sprint sprint-01
+    --message "详情信息"
 ```
 
-## 参数说明
+### 参数说明
 
 | 参数 | 必填 | 说明 |
 |------|------|------|
-| `--node` | 是 | 节点名称（如 TDD开发、E2E测试） |
+| `--node` | 是 | 节点名称 |
 | `--status` | 是 | success / failure / warning / pending |
 | `--message` | 否 | 详细信息 |
-| `--screenshot` | 否 | 截图路径（如有） |
-| `--story-id` | 否 | 关联的 Story ID |
+| `--screenshot` | 否 | 截图路径 |
+| `--story-id` | 否 | Story ID |
 | `--sprint` | 否 | Sprint 名称 |
-| `--dry-run` | 否 | 仅打印不发送（调试用） |
+| `--config` | 否 | 配置文件路径（默认从项目加载） |
+| `--dry-run` | 否 | 仅打印不发送 |
+| `--list-channels` | 否 | 列出支持的渠道 |
 
-## 状态说明
+### 状态说明
 
 | 状态 | Emoji | 用途 |
 |------|-------|------|
@@ -36,202 +87,11 @@ python3 scripts/nflow_notify.py \
 | warning | ⚠️ | 节点有警告但继续 |
 | pending | ⏳ | 节点等待中 |
 
-## 节点通知示例
-
-### 1. Story 选择完成
-
-```bash
-python3 scripts/nflow_notify.py \
-    --node "Story选择" \
-    --status success \
-    --message "已选择 STORY-001: 用户注册功能" \
-    --story-id STORY-001 \
-    --sprint sprint-01
-```
-
-### 2. Git Worktree 创建
-
-```bash
-python3 scripts/nflow_notify.py \
-    --node "GitWorktree创建" \
-    --status success \
-    --message "分支 feature/story-001 已创建并切换" \
-    --story-id STORY-001
-```
-
-### 3. E2E 用例编写完成（含截图）
-
-```bash
-python3 scripts/nflow_notify.py \
-    --node "E2E用例编写" \
-    --status success \
-    --message "已完成 5 个测试用例，覆盖登录、注册核心流程" \
-    --screenshot "sprints/sprint-01/screenshots/us001-case001-step1.png" \
-    --story-id STORY-001
-```
-
-### 4. TDD 开发完成
-
-```bash
-python3 scripts/nflow_notify.py \
-    --node "TDD开发" \
-    --status success \
-    --message "RED→GREEN→REFACTOR 完成，覆盖率 85%" \
-    --screenshot "sprints/sprint-01/coverage-report.png" \
-    --story-id STORY-001
-```
-
-### 5. 代码审查失败
-
-```bash
-# 审查有问题但未达到3次阈值
-python3 scripts/nflow_notify.py \
-    --node "代码审查" \
-    --status warning \
-    --message "发现 2 个 🟡 Suggestion，需要修复后重新审查" \
-    --screenshot "sprints/sprint-01/reviews/review-001.png" \
-    --story-id STORY-001
-```
-
-### 6. 审查失败达到3次（人工干预）
-
-```bash
-python3 scripts/nflow_notify.py \
-    --node "代码审查-人工干预" \
-    --status failure \
-    --message "⚠️ 审查失败 3 次！需要 Tech Lead 人工介入审查 STORY-001" \
-    --story-id STORY-001
-```
-
-### 7. 测试执行失败
-
-```bash
-python3 scripts/nflow_notify.py \
-    --node "测试执行" \
-    --status failure \
-    --message "测试失败: test_user_registration 失败，请查看截图" \
-    --screenshot "sprints/sprint-01/test-reports/failure-001.png" \
-    --story-id STORY-001
-```
-
-### 8. E2E 测试完成（含报告）
-
-```bash
-python3 scripts/nflow_notify.py \
-    --node "E2E测试" \
-    --status success \
-    --message "E2E 测试完成: 10/12 通过，2 个失败（详见报告）" \
-    --screenshot "sprints/sprint-01/acceptance-report-001.png" \
-    --story-id STORY-001
-```
-
-### 9. 代码合并完成
-
-```bash
-python3 scripts/nflow_notify.py \
-    --node "代码合并" \
-    --status success \
-    --message "feature/story-001 已合并到 main 分支" \
-    --story-id STORY-001
-```
-
-### 10. Story 状态更新
-
-```bash
-python3 scripts/nflow_notify.py \
-    --node "Tracker更新" \
-    --status success \
-    --message "STORY-001: ⏳ TODO → ✅ DONE" \
-    --story-id STORY-001
-```
-
 ---
 
-## 通知格式预览
+## 在命令中集成
 
-发送的通知格式如下：
-
-```
-✅ **NFlow 开发节点报告**
-
-**节点:** TDD开发
-**状态:** SUCCESS
-**时间:** 15:30:45
-**Story:** STORY-001
-**Sprint:** sprint-01
-
-**详情:**
-RED→GREEN→REFACTOR 完成，覆盖率 85%
-
----
-_由 NFlow 自动发送_
-```
-
----
-
-## 完整通知节点一览
-
-### Phase 1: 需求定义 (/nflow-requirements)
-
-| 节点 | 状态 | 截图 | 说明 |
-|------|------|------|------|
-| 市场调研 | ✅ | 可选 | 调研报告预览 |
-| PRD 草稿 | ✅ | 可选 | PRD 待审核 |
-| PRD 批准 | ✅/⚠️/❌ | 可选 | 审核结果 |
-| 架构设计 | ✅ | 可选 | 架构图 |
-
-### Phase 2-3: 设计 (/nflow-design)
-
-| 节点 | 状态 | 截图 | 说明 |
-|------|------|------|------|
-| 设计系统 | ✅ | 是 | design-pattern.json 可视化 |
-| 设计系统审核 | ✅/⚠️/❌ | 可选 | 审核反馈 |
-| UX 线框图 | ✅ | 是 | 线框图截图 |
-| 线框图汇总 | ✅ | 是 | 流程图截图 |
-
-### Phase 4-5: 原型 (/nflow-prototype)
-
-| 节点 | 状态 | 截图 | 说明 |
-|------|------|------|------|
-| Approval Gate | ✅/⚠️/❌ | 可选 | 审核结果 |
-| 文档更新 | ✅ | 可选 | 更新内容 |
-| UI 原型生成 | ✅ | 是 | HTML 原型截图 |
-| 原型审核 | ✅/⚠️/❌ | 是 | 审核反馈 |
-
-### Phase 6-7: 规划 (/nflow-plan)
-
-| 节点 | 状态 | 截图 | 说明 |
-|------|------|------|------|
-| Backlog 生成 | ✅ | 否 | Epic + Stories 列表 |
-| Sprint 规划 | ✅ | 否 | Sprint 计划 |
-
-### Phase 8: 开发 (/nflow-dev)
-
-| 节点 | 状态 | 截图 | 说明 |
-|------|------|------|------|
-| Story 选择 | ✅/❌ | 否 | 选择结果 |
-| Git Worktree | ✅/❌ | 否 | 创建结果 |
-| E2E 用例编写 | ✅/❌ | 是 | 用例截图 |
-| TDD 开发 | ✅/❌ | 可选 | 失败截图 |
-| 代码审查 | ✅/⚠️/❌ | 可选 | 问题截图 |
-| 测试执行 | ✅/❌ | 是 | 失败截图 |
-| E2E 测试 | ✅/❌ | 是 | 报告截图 |
-| 代码合并 | ✅/❌ | 否 | 合并状态 |
-| Tracker 更新 | ✅ | 否 | 状态确认 |
-| 人工干预 | ⚠️ | 可选 | 紧急通知 |
-
-### Phase 9: 评审 (/nflow-review)
-
-| 节点 | 状态 | 截图 | 说明 |
-|------|------|------|------|
-| 最终评审 | ✅ | 可选 | 评审结果 |
-| 项目完成 | ✅ | 否 | 完成通知 |
-
----
-
-## 在命令中集成通知
-
-### Python 脚本中调用
+### Python 调用
 
 ```python
 import subprocess
@@ -248,29 +108,51 @@ def notify(node, status, message, story_id=None, screenshot=None):
     if screenshot:
         cmd.extend(["--screenshot", screenshot])
     
-    subprocess.run(cmd)
+    result = subprocess.run(cmd)
+    return result.returncode == 0
 
 # 使用
 notify("TDD开发", "success", "RED→GREEN→REFACTOR 完成", "STORY-001")
 ```
 
-### Shell 脚本中调用
+### Shell 调用
 
 ```bash
 #!/bin/bash
 python3 scripts/nflow_notify.py \
     --node "节点名称" \
     --status success \
-    --message "$message"
+    --message "$message" \
+    --story-id "$STORY_ID"
+```
+
+---
+
+## 通知触发规则
+
+通过 `notify_on` 配置控制通知触发：
+
+```json
+{
+    "notify_on": {
+        "phase_complete": true,      // Phase 完成后通知
+        "story_complete": true,      // Story 完成时通知
+        "review_required": true,      // 需要审核时通知
+        "intervention_required": true, // 需要人工干预时通知（始终通知）
+        "sprint_complete": true      // Sprint 完成时通知
+    }
+}
 ```
 
 ---
 
 ## 调试模式
 
-使用 `--dry-run` 仅打印通知内容，不发送：
-
 ```bash
+# 列出支持的渠道
+python3 scripts/nflow_notify.py --list-channels
+
+# 干运行（不发送）
 python3 scripts/nflow_notify.py \
     --node "测试" \
     --status success \
@@ -278,9 +160,59 @@ python3 scripts/nflow_notify.py \
     --dry-run
 ```
 
-输出：
+干运行输出示例：
 ```
 === 干运行 - 不发送 ===
+渠道: telegram
+目标: 7314529482
+---
 ✅ **NFlow 开发节点报告**
-...
+
+**节点:** 测试
+**状态:** SUCCESS
+**时间:** 15:30:45
+
+**详情:**
+测试消息
+
+---
+_由 NFlow 自动发送_
 ```
+
+---
+
+## 项目初始化时配置
+
+在 `/nflow-init` 过程中，会询问通知渠道：
+
+```
+通知发送到哪里？
+
+当前已配置的渠道：
+  1. Telegram (default) ✅
+
+请选择通知渠道：
+A. Telegram - 发送消息到 Telegram
+B. Discord - 发送消息到 Discord
+C. Slack - 发送消息到 Slack
+D. 暂不启用 - 不发送通知
+```
+
+选择后会创建 `.nflow/notify-config.json` 配置文件。
+
+---
+
+## 迁移现有项目
+
+如果已有项目，想启用通知：
+
+1. 创建 `.nflow/` 目录
+2. 创建 `notify-config.json`：
+```json
+{
+    "channel": "telegram",
+    "target": "你的chat_id",
+    "enabled": true
+}
+```
+3. 从现在起所有节点完成都会发送通知

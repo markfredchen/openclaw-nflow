@@ -212,6 +212,10 @@ cursor --version
 └── .claude/
     └── skills/
         └── nflow/                    # NFlow 技能（安装时生成）
+
+├── .nflow/                           # NFlow 项目配置
+│   ├── notify-config.json            # 通知渠道配置
+│   └── project-state.json            # 项目状态（Phase、Sprint 等）
 ```
 
 ### 8.1 初始化记忆文件
@@ -307,7 +311,43 @@ python3 .claude/skills/nflow/scripts/nflow_tools.py init-memory "{project-name}"
 
 ---
 
-### 9. 初始化 project-config.md
+### 9. 确定通知渠道
+
+**询问用户：**
+```
+通知发送到哪里？
+
+当前已配置的渠道：
+  1. Telegram (default) ✅
+
+请选择通知渠道：
+A. Telegram - 发送消息到 Telegram
+B. Discord - 发送消息到 Discord
+C. Slack - 发送消息到 Slack
+D. 暂不启用 - 不发送通知
+```
+
+**支持的渠道：**
+| 渠道 | 说明 |
+|------|------|
+| Telegram | 即时通讯，配置简单 |
+| Discord | 适合团队协作 |
+| Slack | 适合企业环境 |
+| WhatsApp | 即时通讯 |
+| Signal | 私密通讯 |
+| iMessage | Apple 生态 |
+
+**如果选择已配置的渠道：**
+- 保存到 `.nflow/notify-config.json`
+- 使用配置的默认 target
+
+**如果选择暂不启用：**
+- 设置 `enabled: false`
+- 之后可通过编辑 `.nflow/notify-config.json` 启用
+
+---
+
+### 10. 初始化 project-config.md
 
 ```markdown
 # Project Config
@@ -359,6 +399,8 @@ python3 .claude/skills/nflow/scripts/nflow_tools.py init-memory "{project-name}"
 - ✅ 所有选择的工具已验证安装状态（如适用）
 - ✅ `docs/project-memory.md` 已初始化
 - ✅ `sprints/decision-log.md` 已初始化
+- ✅ `.nflow/notify-config.json` 已创建（通知渠道配置）
+- ✅ `.nflow/project-state.json` 已创建（项目状态）
 
 ---
 
@@ -388,6 +430,12 @@ Q4: "选择什么技术栈？"
     → 编程语言、前端框架、后端框架、数据库
 
 Q5: "预计上线时间是什么时候？"
+
+Q6: "通知发送到哪个渠道？"
+    A. Telegram（默认）
+    B. Discord
+    C. Slack
+    D. 暂不启用
 ```
 
 ---

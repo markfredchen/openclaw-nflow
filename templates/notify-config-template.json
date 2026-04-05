@@ -1,0 +1,12 @@
+{
+    "channel": "telegram",
+    "target": "7314529482",
+    "enabled": true,
+    "notify_on": {
+        "phase_complete": true,
+        "story_complete": true,
+        "review_required": true,
+        "intervention_required": true,
+        "sprint_complete": true
+    }
+}
