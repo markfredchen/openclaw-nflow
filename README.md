@@ -100,31 +100,93 @@ nflow/
 
 ## Quick Install
 
-### OpenClaw
+### 一键安装（推荐）
 
 ```bash
-# Global install
-./scripts/install-openclaw.sh --mode agent
+# 方式 1: 克隆到项目目录
+git clone https://github.com/markfredchen/openclaw-nflow.git /path/to/your-project/.nflow
 
-# Activate skill
-/nflow
+# 方式 2: 使用安装脚本（项目内）
+curl -sSL https://raw.githubusercontent.com/markfredchen/openclaw-nflow/main/scripts/quick-install.sh | bash
 ```
 
-### Claude Code
+### OpenClaw 全局安装
 
 ```bash
-# Install to project directory
-./scripts/install-claude-code.sh --local /path/to/project
+# 克隆仓库
+git clone https://github.com/markfredchen/openclaw-nflow.git ~/.openclaw/skills/nflow
 
-# Use commands directly
+# 安装到 OpenClaw
+cd ~/.openclaw/skills/nflow
+./scripts/install-openclaw.sh --mode agent
+```
+
+### Claude Code / Codex
+
+```bash
+# 安装到项目
+cd /path/to/project
+git clone https://github.com/markfredchen/openclaw-nflow.git .nflow
+
+# 激活 NFlow
 /nflow-init
 ```
 
-### Codex
+---
+
+## 🚀 Getting Started
+
+### 1. 安装完成后，编辑通知配置
 
 ```bash
-# Install
-./scripts/install-codex.sh --local /path/to/project
+# 编辑通知配置
+vim .nflow/notify-config.json
+
+# 设置你的 channel 和 target:
+# - channel: telegram/discord/slack
+# - target: 你的 chat_id 或 channel_id
+# - enabled: true 启用通知
+```
+
+### 2. 初始化项目
+
+```bash
+# 在 OpenClaw 中执行
+/nflow-init
+
+# 或手动初始化
+python3 .nflow/scripts/nflow_tools.py init-memory "项目名称" L2 "OpenClaw"
+```
+
+### 3. 完整开发流程
+
+```
+/nflow-init           # Phase 0: 项目初始化
+/nflow-requirements   # Phase 1: 需求定义
+/nflow-design        # Phase 2-3: 设计系统 + 线框图
+/nflow-prototype    # Phase 4-5: 原型 + 审核
+/nflow-plan         # Phase 6-7: Backlog + Sprint
+/nflow-dev          # Phase 8: 开发循环
+/nflow-review       # Phase 9: 最终评审
+```
+
+### 项目结构
+
+```
+your-project/
+├── .nflow/                    # NFlow 配置
+│   ├── notify-config.json     # 通知配置
+│   └── project-state.json    # 项目状态
+├── docs/                     # 文档
+│   ├── prd.md
+│   └── architecture.md
+├── design/                   # 设计
+│   ├── design-pattern.json
+│   ├── wireframes/
+│   └── mockups/
+└── sprints/                  # Sprint
+    ├── backlog/
+    └── sprint-01/
 ```
 
 ---
