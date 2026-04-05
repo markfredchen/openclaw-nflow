@@ -681,7 +681,7 @@ class NFlowTools:
         return context
     
     def get_context_for_spawn(self, story_id: str = None) -> str:
-        """生成用于 spawn 外部 Agent 的上下文文本"""
+        """生成用于 spawn 外部 Agent 的上下文文本（完整上下文）"""
         context = self.generate_context(story_id)
         
         lines = []
@@ -730,6 +730,48 @@ class NFlowTools:
         lines.append("### 参考文档")
         lines.append(f"- 架构: {self.docs_dir / 'architecture.md'}")
         lines.append(f"- PRD: {self.docs_dir / 'prd.md'}")
+        lines.append("")
+        
+        return "\n".join(lines)
+
+    def get_minimal_context_for_spawn(self, story_id: str = None) -> str:
+        """生成最小化上下文（仅当前 Story 相关，不泄露其他任务信息）"""
+        if not story_id:
+            return "## 错误: 未指定 Story ID"
+        
+        story = self.get_story(story_id)
+        if not story:
+            return f"## 错误: 未找到 Story {story_id}"
+        
+        lines = []
+        lines.append("## 任务上下文")
+        lines.append("")
+        lines.append(f"**项目路径:** {self.project_root}")
+        lines.append(f"**你的任务:** Story {story_id}")
+        lines.append("")
+        lines.append("### Story 详情")
+        lines.append(f"- **ID:** {story.id}")
+        lines.append(f"- **名称:** {story.name}")
+        lines.append(f"- **优先级:** {story.priority}")
+        lines.append(f"- **故事点:** {story.points}")
+        lines.append(f"- **Sprint:** {story.sprint}")
+        lines.append("")
+        
+        # 仅添加必要的参考文档路径
+        lines.append("### 参考文档")
+        lines.append(f"- 架构文档: docs/architecture.md")
+        lines.append(f"- PRD: docs/prd.md")
+        lines.append(f"- 设计规范: design/design-pattern.json")
+        lines.append(f"- 线框图: design/wireframes/")
+        lines.append("")
+        
+        lines.append("### 你的工作目录")
+        lines.append(f"项目根目录: {self.project_root}")
+        lines.append(f"Story Tracker: sprints/{story.sprint}/user-stories-tracker.md")
+        lines.append("")
+        
+        lines.append("---")
+        lines.append("**注意:** 只关注当前 Story，不要询问或处理其他任务。")
         lines.append("")
         
         return "\n".join(lines)

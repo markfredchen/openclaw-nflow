@@ -119,18 +119,42 @@ def load_persona(agent_type: str, skill_root: Path) -> str:
     return ""
 
 
-def get_project_context(project_root: Path, story_id: str = None) -> str:
-    """从项目记忆获取上下文"""
+def get_project_context(project_root: Path, story_id: str = None, minimal: bool = True) -> str:
+    """从项目记忆获取上下文
+    
+    Args:
+        project_root: 项目根目录
+        story_id: Story ID
+        minimal: 是否使用最小化上下文（默认 True，仅传递当前 Story 信息）
+    """
     if not NFLOW_TOOLS_AVAILABLE:
         return ""
     
     tools = NFlowTools(str(project_root))
-    return tools.get_context_for_spawn(story_id)
+    
+    if minimal:
+        # 最小化上下文：仅当前 Story，不泄露其他任务信息
+        return tools.get_minimal_context_for_spawn(story_id)
+    else:
+        # 完整上下文：包含 Sprint 状态、已知问题、决策日志等
+        return tools.get_context_for_spawn(story_id)
 
 
 def build_spawn_command(agent_id: str, task_type: str, story_id: str, 
-                        skill_root: Path, project_root: str) -> dict:
-    """构建 ACP spawn 命令参数"""
+                        skill_root: Path, project_root: str,
+                        minimal_context: bool = True,
+                        use_context: bool = True) -> dict:
+    """构建 ACP spawn 命令参数
+    
+    Args:
+        agent_id: Agent ID (claude-code, codex, etc.)
+        task_type: 任务类型 (developer, frontend, backend, qa, reviewer, git)
+        story_id: Story ID
+        skill_root: NFlow skill 根目录
+        project_root: 项目根目录
+        minimal_context: 是否使用最小化上下文（默认 True，仅传递当前 Story 信息）
+        use_context: 是否加载项目上下文（默认 True）
+    """
     
     agent_config = AGENT_TEMPLATES.get(task_type, AGENT_TEMPLATES["developer"])
     project_path = Path(project_root)
@@ -138,8 +162,11 @@ def build_spawn_command(agent_id: str, task_type: str, story_id: str,
     # 加载 persona
     persona = load_persona(task_type, skill_root)
     
-    # 获取项目上下文（从 project-memory.md）
-    project_context = get_project_context(project_path, story_id)
+    # 获取项目上下文
+    if use_context:
+        project_context = get_project_context(project_path, story_id, minimal=minimal_context)
+    else:
+        project_context = ""
     
     # 获取 Story 详情
     story_info = ""
@@ -243,11 +270,17 @@ def main():
                        help="仅打印 JSON，不执行")
     parser.add_argument("--no-context", action="store_true",
                        help="不加载项目上下文")
+    parser.add_argument("--full-context", action="store_true",
+                       help="使用完整上下文（包含 Sprint 状态、已知问题等）")
     
     args = parser.parse_args()
     
     skill_root = Path(args.skill_root)
     project_root = Path(args.project).resolve()
+    
+    # 确定上下文模式
+    use_context = not args.no_context
+    minimal_context = not args.full_context  # 默认使用最小化上下文
     
     # 构建 spawn 参数
     spawn_params = build_spawn_command(
@@ -255,7 +288,9 @@ def main():
         task_type=args.task,
         story_id=args.story_id,
         skill_root=skill_root,
-        project_root=str(project_root)
+        project_root=str(project_root),
+        minimal_context=minimal_context,
+        use_context=use_context
     )
     
     # 输出命令
@@ -263,8 +298,11 @@ def main():
     print(f" Spawning {args.agent} for {args.task}")
     print(f" Story: {args.story_id}")
     print(f" Project: {project_root}")
-    if NFLOW_TOOLS_AVAILABLE and not args.no_context:
-        print(" Context: ✅ 从 project-memory.md 加载")
+    if use_context:
+        if minimal_context:
+            print(" Context: ✅ 最小化上下文（仅当前 Story）")
+        else:
+            print(" Context: ✅ 完整上下文")
     else:
         print(" Context: ❌ 未加载")
     print("=" * 60)
