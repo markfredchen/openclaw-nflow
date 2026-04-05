@@ -103,33 +103,40 @@ nflow/
 ### 一键安装（推荐）
 
 ```bash
-# 方式 1: 克隆到项目目录
-git clone https://github.com/markfredchen/openclaw-nflow.git /path/to/your-project/.nflow
-
-# 方式 2: 使用安装脚本（项目内）
+# 默认安装 OpenClaw 集成
 curl -sSL https://raw.githubusercontent.com/markfredchen/openclaw-nflow/main/scripts/quick-install.sh | bash
+
+# 指定安装 Claude Code 集成
+curl -sSL https://raw.githubusercontent.com/markfredchen/openclaw-nflow/main/scripts/quick-install.sh | bash -s -- --target claude-code
+
+# 指定安装 Codex 集成
+curl -sSL https://raw.githubusercontent.com/markfredchen/openclaw-nflow/main/scripts/quick-install.sh | bash -s -- --target codex
+
+# 指定项目路径
+curl -sSL https://raw.githubusercontent.com/markfredchen/openclaw-nflow/main/scripts/quick-install.sh | bash -s -- --path /path/to/project
 ```
 
-### OpenClaw 全局安装
+### 安装目标
+
+| 目标 | 说明 |
+|------|------|
+| `openclaw` | OpenClaw 全局安装（默认） |
+| `claude-code` | Claude Code 项目内安装 |
+| `codex` | Codex 项目内安装 |
+
+### 手动安装
 
 ```bash
 # 克隆仓库
 git clone https://github.com/markfredchen/openclaw-nflow.git ~/.openclaw/skills/nflow
 
-# 安装到 OpenClaw
+# OpenClaw 全局安装
 cd ~/.openclaw/skills/nflow
 ./scripts/install-openclaw.sh --mode agent
-```
 
-### Claude Code / Codex
-
-```bash
-# 安装到项目
+# Claude Code / Codex 项目内安装
 cd /path/to/project
 git clone https://github.com/markfredchen/openclaw-nflow.git .nflow
-
-# 激活 NFlow
-/nflow-init
 ```
 
 ---
