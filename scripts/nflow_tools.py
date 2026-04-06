@@ -407,7 +407,7 @@ class NFlowTools:
             },
             "prototype": {
                 "required_step": "design_approved",
-                "required_files": ["design-pattern.json"],
+                "required_files": ["nflow-docs/design/design-pattern.json"],
                 "error_msg": "Phase 2-3 设计系统未完成。请先完成 /nflow-design"
             },
             "plan": {
