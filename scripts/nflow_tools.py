@@ -398,10 +398,11 @@ class NFlowTools:
         current_step = state.get("current_step", "")
         
         # 定义每个步骤的前置条件
+        # 文件路径相对于项目根目录
         PREREQUISITES = {
             "design": {
                 "required_step": "architecture_approved",
-                "required_files": ["architecture.md"],
+                "required_files": ["nflow-docs/docs/architecture.md"],
                 "error_msg": "Phase 1 架构设计未完成。请先完成 /nflow-requirements 中的 Step 7（架构设计）"
             },
             "prototype": {
