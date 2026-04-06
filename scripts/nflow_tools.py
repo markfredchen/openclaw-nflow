@@ -376,6 +376,95 @@ class NFlowTools:
             "requires_human_intervention": story.test_fail_count >= 3 or story.review_fail_count >= 3
         }
     
+    def check_prerequisites(self, step: str) -> tuple:
+        """
+        检查是否满足执行某个命令的前置条件
+        
+        Returns:
+            tuple: (success: bool, message: str)
+        """
+        nflow_dir = self.project_root / ".nflow"
+        state_file = nflow_dir / "project-state.json"
+        
+        # 检查 project-state.json 是否存在
+        if not state_file.exists():
+            return False, "项目未初始化，请先执行 /nflow-init"
+        
+        try:
+            state = json.loads(state_file.read_text(encoding='utf-8'))
+        except json.JSONDecodeError:
+            return False, "project-state.json 格式错误"
+        
+        current_step = state.get("current_step", "")
+        
+        # 定义每个步骤的前置条件
+        PREREQUISITES = {
+            "design": {
+                "required_step": "architecture_approved",
+                "required_files": ["architecture.md"],
+                "error_msg": "Phase 1 架构设计未完成。请先完成 /nflow-requirements 中的 Step 7（架构设计）"
+            },
+            "prototype": {
+                "required_step": "design_approved",
+                "required_files": ["design-pattern.json"],
+                "error_msg": "Phase 2-3 设计系统未完成。请先完成 /nflow-design"
+            },
+            "plan": {
+                "required_step": "prototype_approved",
+                "required_files": ["mockups/"],
+                "error_msg": "Phase 4-5 原型设计未完成。请先完成 /nflow-prototype"
+            },
+            "dev": {
+                "required_step": "plan_approved",
+                "required_files": ["sprints/backlog.md", "sprints/sprint-01/"],
+                "error_msg": "Phase 6-7 Sprint 规划未完成。请先完成 /nflow-plan"
+            }
+        }
+        
+        if step not in PREREQUISITES:
+            return False, f"未知步骤: {step}"
+        
+        prereq = PREREQUISITES[step]
+        
+        # 检查 current_step
+        if current_step != prereq["required_step"]:
+            return False, prereq["error_msg"]
+        
+        # 检查必需文件
+        docs_dir = self.project_dir = self.project_root
+        for f in prereq["required_files"]:
+            file_path = docs_dir / f
+            if not file_path.exists():
+                return False, f"必需文件不存在: {f}"
+        
+        return True, f"前置条件满足，可以执行 /nflow-{step}"
+    
+    def update_project_state(self, updates: dict) -> bool:
+        """
+        更新 project-state.json
+        
+        Args:
+            updates: 要更新的字段字典
+        
+        Returns:
+            bool: 更新是否成功
+        """
+        nflow_dir = self.project_root / ".nflow"
+        state_file = nflow_dir / "project-state.json"
+        
+        if not state_file.exists():
+            return False
+        
+        try:
+            state = json.loads(state_file.read_text(encoding='utf-8'))
+            state.update(updates)
+            state["last_update"] = datetime.now().strftime("%Y-%m-%d")
+            state_file.write_text(json.dumps(state, indent=2, ensure_ascii=False), encoding='utf-8')
+            return True
+        except Exception as e:
+            print(f"❌ 更新失败: {e}")
+            return False
+    
     # ============ Git Worktree ============
     
     def list_worktrees(self) -> list:
@@ -1047,6 +1136,26 @@ def main():
         story_id = args.args[0] if args.args else None
         context_text = tools.get_context_for_spawn(story_id)
         print(context_text)
+    
+    elif cmd == "check-prerequisites":
+        if len(args.args) < 1:
+            print("❌ 需要检查步骤名称")
+            print("用法: python3 nflow_tools.py check-prerequisites <step>")
+            print("可用步骤:")
+            print("  design        - 检查是否满足 /nflow-design 执行条件")
+            print("  prototype    - 检查是否满足 /nflow-prototype 执行条件")
+            print("  plan         - 检查是否满足 /nflow-plan 执行条件")
+            print("  dev          - 检查是否满足 /nflow-dev 执行条件")
+            sys.exit(1)
+        
+        step = args.args[0]
+        success, message = tools.check_prerequisites(step)
+        
+        if success:
+            print(f"✅ {message}")
+        else:
+            print(f"❌ {message}")
+            sys.exit(1)
     
     elif cmd == "generate-review":
         if len(args.args) < 1:
