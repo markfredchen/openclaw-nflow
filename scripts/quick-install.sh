@@ -4,22 +4,22 @@
 #
 # 用法:
 #   curl -sSL https://raw.githubusercontent.com/markfredchen/openclaw-nflow/main/scripts/quick-install.sh | bash
-#   curl -sSL https://raw.githubusercontent.com/markfredchen/openclaw-nflow/main/scripts/quick-install.sh | bash -s -- my-project
-#   ./scripts/quick-install.sh /path/to/project --target openclaw
+#   curl -sSL https://raw.githubusercontent.com/markfredchen/openclaw-nflow/main/scripts/quick-install.sh | bash -s -- --target openclaw --path my-project
+#   ./scripts/quick-install.sh --target claude-code --path my-app
 #
 # 选项:
-#   --target <target>   安装目标: openclaw, claude-code, codex（必须）
-#   --path <path>      项目路径
+#   --target <target>   安装目标（必须）: openclaw, claude-code, codex
+#   --path <name>      项目名称，在当前目录下创建目录
 #
 # 示例:
-#   $0 --target openclaw --path /path/to/project
-#   $0 --target claude-code --path ~/my-app
-#   $0 my-app            # 使用字符串作为目录名，在当前目录创建
+#   $0 --target openclaw --path my-project     # 在当前目录创建 my-project/
+#   $0 --target claude-code --path my-app      # 在当前目录创建 my-app/
+#   $0 my-project                             # 等于 --path my-project（target 仍需单独指定）
 
 set -e
 
 TARGET=""
-PROJECT_PATH=""
+PROJECT_NAME=""
 CURRENT_DIR="$(pwd)"
 
 # 解析参数
@@ -30,7 +30,7 @@ while [[ $# -gt 0 ]]; do
             shift 2
             ;;
         --path)
-            PROJECT_PATH="$2"
+            PROJECT_NAME="$2"
             shift 2
             ;;
         --help|-h)
@@ -38,13 +38,13 @@ while [[ $# -gt 0 ]]; do
             echo ""
             echo "Options:"
             echo "  --target <target>   安装目标（必须）: openclaw, claude-code, codex"
-            echo "  --path <path>      项目路径"
+            echo "  --path <name>      项目名称，在当前目录下创建目录"
             echo "  --help, -h         显示帮助"
             echo ""
             echo "Examples:"
-            echo "  $0 --target openclaw --path /path/to/project"
-            echo "  $0 --target claude-code --path ~/my-app"
-            echo "  $0 my-project       # 在当前目录创建 my-project 目录"
+            echo "  $0 --target openclaw --path my-project"
+            echo "  $0 --target claude-code --path my-app"
+            echo "  $0 --target codex my-project"
             exit 0
             ;;
         -*)
@@ -53,15 +53,9 @@ while [[ $# -gt 0 ]]; do
             exit 1
             ;;
         *)
-            # 非选项参数：如果是第一个且不是路径（不包含/），作为目录名
-            if [[ -z "$PROJECT_PATH" && "$1" != -* ]]; then
-                if [[ "$1" == *"/"* ]]; then
-                    # 包含 /，当作路径
-                    PROJECT_PATH="$1"
-                else
-                    # 不包含 /，当作目录名，在当前目录创建
-                    PROJECT_PATH="$CURRENT_DIR/$1"
-                fi
+            # 第一个非选项参数作为项目名称
+            if [[ -z "$PROJECT_NAME" && "$1" != -* ]]; then
+                PROJECT_NAME="$1"
             fi
             shift
             ;;
@@ -72,7 +66,7 @@ done
 if [[ -z "$TARGET" ]]; then
     echo "❌ 错误: --target 参数必须提供"
     echo ""
-    echo "用法: $0 --target <target> [--path <path>]"
+    echo "用法: $0 --target <target> [--path <project-name>]"
     echo ""
     echo "支持的安装目标:"
     echo "  openclaw     - OpenClaw 全局安装"
@@ -80,8 +74,8 @@ if [[ -z "$TARGET" ]]; then
     echo "  codex        - Codex 项目内安装"
     echo ""
     echo "示例:"
-    echo "  $0 --target openclaw --path ~/my-project"
-    echo "  $0 --target claude-code my-project"
+    echo "  $0 --target openclaw --path my-project"
+    echo "  $0 --target claude-code --path my-app"
     exit 1
 fi
 
@@ -96,28 +90,37 @@ case "$TARGET" in
         ;;
 esac
 
-# 3. 如果没有提供 path，使用目录名作为项目名（默认当前目录下创建）
-if [[ -z "$PROJECT_PATH" ]]; then
-    PROJECT_PATH="$CURRENT_DIR/nflow-project"
-    echo "⚠️  未指定项目路径，默认使用: $PROJECT_PATH"
+# 3. 项目名称处理
+if [[ -z "$PROJECT_NAME" ]]; then
+    echo "❌ 错误: --path 参数必须提供"
+    echo ""
+    echo "用法: $0 --target <target> --path <project-name>"
+    echo ""
+    echo "示例:"
+    echo "  $0 --target openclaw --path my-project"
+    exit 1
 fi
+
+# 项目路径：在当前目录下创建
+PROJECT_PATH="$CURRENT_DIR/$PROJECT_NAME"
 
 echo ""
 echo "🚀 NFlow 一键安装"
 echo "=================="
 echo "目标: $TARGET"
-echo "项目: $PROJECT_PATH"
+echo "项目: $PROJECT_NAME"
+echo "路径: $PROJECT_PATH"
 echo ""
 
-# 4. 创建项目目录
+# 4. 如果项目目录已存在，先删除
+if [[ -d "$PROJECT_PATH" ]]; then
+    echo "🗑️  删除旧项目目录..."
+    rm -rf "$PROJECT_PATH"
+fi
+
+# 5. 创建项目目录
 echo "📁 创建项目目录..."
 mkdir -p "$PROJECT_PATH"
-
-# 5. 如果 nflow 目录已存在，先删除
-if [[ -d "$PROJECT_PATH/.nflow" ]]; then
-    echo "🗑️  删除旧版 NFlow..."
-    rm -rf "$PROJECT_PATH/.nflow"
-fi
 
 # 6. 克隆 NFlow
 echo "📦 克隆 NFlow..."
@@ -140,13 +143,9 @@ install_openclaw() {
 install_claude_code() {
     echo "🔧 安装 Claude Code 集成..."
     
-    # 创建 .claude 目录
     mkdir -p "$PROJECT_PATH/.claude/skills"
-    
-    # 复制 NFlow skill
     cp -r "$NFLOW_DIR" "$PROJECT_PATH/.claude/skills/nflow"
     
-    # 创建配置
     cat > "$PROJECT_PATH/.claude/config.json" << 'EOF'
 {
     "skills": {
@@ -200,7 +199,6 @@ mkdir -p "$PROJECT_PATH/deploy/migrations"
 echo "⚙️  配置 NFlow..."
 mkdir -p "$PROJECT_PATH/.nflow"
 
-# 通知配置
 cat > "$PROJECT_PATH/.nflow/notify-config.json" << 'EOF'
 {
     "channel": "telegram",
@@ -216,7 +214,6 @@ cat > "$PROJECT_PATH/.nflow/notify-config.json" << 'EOF'
 }
 EOF
 
-# 项目状态
 cat > "$PROJECT_PATH/.nflow/project-state.json" << EOF
 {
     "phase": 0,
@@ -235,8 +232,9 @@ echo "📁 项目: $PROJECT_PATH"
 echo "🎯 目标: $TARGET"
 echo ""
 echo "📋 下一步:"
-echo "   1. 编辑 .nflow/notify-config.json 设置通知渠道"
-echo "   2. 运行 /nflow-init 开始项目初始化"
+echo "   1. cd $PROJECT_NAME"
+echo "   2. 编辑 .nflow/notify-config.json 设置通知渠道"
+echo "   3. 运行 /nflow-init 开始项目初始化"
 echo ""
 echo "📚 NFlow 命令:"
 echo "   /nflow-init           - 项目初始化"
