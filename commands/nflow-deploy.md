@@ -280,7 +280,8 @@ python3 scripts/nflow_notify.py \
 ## 部署文档结构
 
 ```
-deploy/
+deploy/                              # 位于项目根目录
+├── README.md
 ├── local/
 │   ├── docker-compose.yml
 │   ├── environment-spec.md
@@ -299,7 +300,8 @@ deploy/
 │   │   └── hpa.yml
 │   ├── pipeline.yml
 │   └── environment-spec.md
-└── README.md
+└── migrations/                      # 数据迁移
+    └── YYYYMMDD_description/
 ```
 
 ---

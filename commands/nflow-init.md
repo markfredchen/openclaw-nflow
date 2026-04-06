@@ -184,38 +184,56 @@ cursor --version
 
 ### 8. 创建项目目录结构
 
-**重要：所有项目文件放在项目根目录，.claude/ 只放技能配置**
-
 ```
 {project-path}/
-├── docs/                              # 文档输出
-│   ├── project-config.md              # 项目配置（Phase 0）
-│   ├── market-research-report.md      # 市场调研（Phase 1）
-│   ├── prd.md                        # 产品需求文档（Phase 1）
-│   └── architecture.md                # 架构文档（Phase 1）
+├── nflow-docs/                       # NFlow 所有文档输出
+│   ├── docs/                        # 文档
+│   │   ├── project-config.md        # 项目配置（Phase 0）
+│   │   ├── market-research-report.md # 市场调研（Phase 1）
+│   │   ├── requirements-extracted.md # 需求提取（Phase 1）
+│   │   ├── brainstorming-record.md  # Brainstorming 记录（Phase 1）
+│   │   ├── requirements-confirmed.md # 需求确认书（Phase 1）
+│   │   ├── prd.md                  # 产品需求文档（Phase 1）
+│   │   ├── architecture.md         # 架构文档（Phase 1）
+│   │   └── project-memory.md        # 项目记忆
+│   │
+│   ├── design/                     # 设计输出
+│   │   ├── design-pattern.json      # 设计系统（Phase 2）
+│   │   ├── wireframes/             # 线框图（Phase 3）
+│   │   │   ├── README.md
+│   │   │   └── page-*.md
+│   │   └── mockups/                # UI 原型（Phase 5）
+│   │       ├── README.md
+│   │       └── page-*.html
+│   │
+│   └── sprints/                    # Sprint 输出
+│       ├── backlog.md              # 待办列表（Phase 6）
+│       ├── decision-log.md         # 决策日志
+│       ├── sprint-01/
+│       │   ├── sprint-plan.md      # Sprint 计划
+│       │   ├── user-stories-tracker.md # Story 追踪
+│       │   ├── implementations/   # Story 实现代码
+│       │   ├── test-reports/      # 测试报告
+│       │   ├── screenshots/       # E2E 截图
+│       │   ├── acceptance-report-*.html # 验收报告
+│       │   └── review.md          # Sprint 回顾
+│       └── sprint-02/
 │
-├── design/                            # 设计输出
-│   ├── design-pattern.json            # 设计模式（Phase 2）
-│   ├── wireframes/                    # 线框图（Phase 3）
-│   └── mockups/                      # UI 原型（Phase 5）
+├── deploy/                          # 部署文档（独立）
+│   ├── local/                      # 本地环境
+│   ├── staging/                    # 预发布环境
+│   ├── production/                 # 生产环境
+│   └── migrations/                # 数据迁移
 │
-├── sprints/                           # Sprint 输出
-│   ├── backlog.md                    # 待办列表（Phase 6）
-│   ├── sprint-01/
-│   │   ├── sprint-plan.md            # Sprint 计划（Phase 7）
-│   │   ├── user-stories-tracker.md  # Story 追踪（Phase 7）
-│   │   └── implementations/          # Story 实现代码
-│   └── sprint-02/
-│
-├── change-log.md                      # 变更记录
+├── change-log.md                    # 变更记录
 │
 └── .claude/
     └── skills/
-        └── nflow/                    # NFlow 技能（安装时生成）
+        └── nflow/                  # NFlow 技能
 
-├── .nflow/                           # NFlow 项目配置
-│   ├── notify-config.json            # 通知渠道配置
-│   └── project-state.json            # 项目状态（Phase、Sprint 等）
+.nflow/                             # NFlow 项目配置
+├── notify-config.json              # 通知渠道配置
+└── project-state.json             # 项目状态
 ```
 
 ### 8.1 初始化记忆文件

@@ -249,7 +249,7 @@ python3 scripts/nflow_notify.py \
 ## 迁移文档结构
 
 ```
-deploy/migrations/
+deploy/migrations/                    # 位于 deploy/ 下
 ├── README.md                      # 迁移总览
 ├── 20260406_add_user_table/
 │   ├── 001_up.sql               # 正向迁移
