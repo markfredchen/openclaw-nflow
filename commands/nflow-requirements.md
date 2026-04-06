@@ -265,9 +265,11 @@ python3 scripts/nflow_notify.py \
 - 优先级合理
 
 **审核结果：**
-- ✅ APPROVED — 进入架构设计
+- ✅ APPROVED — **进入 Step 7 架构设计**
 - ⚠️ APPROVED_WITH_NOTES — 有建议但可继续
 - ❌ REQUEST_CHANGES — 需要修改后重新提交
+
+**⚠️ 重要：必须完成 Step 7 架构设计后才能进入 Phase 2-3**
 
 ---
 
@@ -308,6 +310,44 @@ python3 scripts/nflow_notify.py \
 | `requirements-confirmed.md` | 用户 | ⏳ |
 | `prd.md` | PM Agent | ⏳ |
 | `architecture.md` | Architect Agent | ⏳ |
+
+---
+
+## Phase 1 完成标准
+
+**必须满足以下所有条件才能进入 Phase 2-3：**
+
+| 步骤 | 文件 | 状态 |
+|------|------|------|
+| 市场调研 | `market-research-report.md` | ✅ |
+| 需求提取 | `requirements-extracted.md` | ✅ |
+| Brainstorming | `brainstorming-record.md` | ✅ |
+| 需求确认 | `requirements-confirmed.md` | ✅ |
+| PRD 草稿 | `prd.md` | ✅ |
+| PRD 审核 | 用户签字 APPROVED | ✅ |
+| 架构设计 | `architecture.md` | ✅ |
+| 架构审核 | 用户签字 APPROVED | ✅ |
+
+**project-state.json 更新：**
+
+```json
+{
+    "phase": 1,
+    "current_step": "architecture_approved",
+    "steps": {
+        "market_research": "approved",
+        "requirements_extracted": "approved",
+        "brainstorming": "approved",
+        "requirements_confirmed": "approved",
+        "prd_draft": "approved",
+        "prd_approved": true,
+        "architecture": "approved",
+        "architecture_approved": true
+    }
+}
+```
+
+**⚠️ 只有 current_step == "architecture_approved" 时才能执行 /nflow-design**
 
 ---
 

@@ -4,9 +4,48 @@
 
 **Phase:** Phase 2-3
 
-**执行时机:** 完成 `/nflow-requirements` 后
+**执行时机:** `/nflow-requirements` 的 Step 7（架构设计）审核通过后
 
 **执行 Agent:** UI Designer Agent → UX Designer Agent
+
+---
+
+## 前置检查
+
+**⚠️ 必须满足以下条件才能执行此命令：**
+
+| 检查项 | 说明 | 未满足时的错误信息 |
+|--------|------|--------------------|
+| project-state.json 存在 | 项目状态文件 | ❌ 错误：项目未初始化，请先执行 /nflow-init |
+| current_step == "architecture_approved" | 架构设计已审核通过 | ❌ 错误：Phase 1 架构设计未完成，请先完成 /nflow-requirements |
+| architecture.md 存在 | 架构文档已生成 | ❌ 错误：架构文档不存在 |
+
+---
+
+## 执行前检查脚本
+
+```bash
+# 检查是否满足执行条件
+python3 scripts/nflow_tools.py check-prerequisites --step design
+```
+
+**检查逻辑：**
+```python
+def check_prerequisites(step: str):
+    state = load_project_state()
+    
+    if step == "design":
+        if state.get("current_step") != "architecture_approved":
+            raise WorkflowError(
+                "Phase 1 架构设计未完成。"
+                "请先完成 /nflow-requirements 中的 Step 7（架构设计）"
+            )
+        if not Path("architecture.md").exists():
+            raise WorkflowError(
+                "架构文档不存在。"
+                "请先执行 /nflow-requirements 生成 architecture.md"
+            )
+```
 
 ---
 
