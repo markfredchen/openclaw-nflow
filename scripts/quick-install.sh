@@ -18,7 +18,7 @@
 
 set -e
 
-TARGET=""
+TARGET="openclaw"
 PROJECT_NAME=""
 CURRENT_DIR="$(pwd)"
 
@@ -37,12 +37,12 @@ while [[ $# -gt 0 ]]; do
             echo "Usage: $0 [OPTIONS] [project-name]"
             echo ""
             echo "Options:"
-            echo "  --target <target>   安装目标（必须）: openclaw, claude-code, codex"
-            echo "  --path <name>      项目名称，在当前目录下创建目录"
+            echo "  --target <target>   安装目标（默认 openclaw）: openclaw, claude-code, codex"
+            echo "  --path <name>      项目名称（必须），在当前目录下创建目录"
             echo "  --help, -h         显示帮助"
             echo ""
             echo "Examples:"
-            echo "  $0 --target openclaw --path my-project"
+            echo "  $0 --path my-project                # 默认 openclaw"
             echo "  $0 --target claude-code --path my-app"
             echo "  $0 --target codex my-project"
             exit 0
@@ -62,22 +62,7 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# 1. 检查 target 是否提供
-if [[ -z "$TARGET" ]]; then
-    echo "❌ 错误: --target 参数必须提供"
-    echo ""
-    echo "用法: $0 --target <target> [--path <project-name>]"
-    echo ""
-    echo "支持的安装目标:"
-    echo "  openclaw     - OpenClaw 全局安装"
-    echo "  claude-code  - Claude Code 项目内安装"
-    echo "  codex        - Codex 项目内安装"
-    echo ""
-    echo "示例:"
-    echo "  $0 --target openclaw --path my-project"
-    echo "  $0 --target claude-code --path my-app"
-    exit 1
-fi
+# 1. target 默认为 openclaw，无需检查
 
 # 2. 验证 target 有效性
 case "$TARGET" in
